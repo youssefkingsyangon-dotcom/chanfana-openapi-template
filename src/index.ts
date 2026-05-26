@@ -7,6 +7,9 @@ import OpenAI from "openai";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
+const openai = new OpenAI({
+  apiKey: (app as any).env?.OPENAI_API_KEY,
+});
 
 app.onError((err, c) => {
 	if (err instanceof ApiException) {
