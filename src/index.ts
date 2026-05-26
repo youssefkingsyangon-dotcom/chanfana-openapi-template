@@ -7,8 +7,24 @@ import OpenAI from "openai";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
-const openai = new OpenAI({
-  apiKey: (app as any).env?.OPENAI_API_KEY,
+app.post("/ai", async (c) => {
+  const openai = new OpenAI({
+    apiKey: c.env.OPENAI_API_KEY,
+  });
+
+  const body = await c.req.json();
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      { role: "system", content: "You are a typing coach AI." },
+      { role: "user", content: body.message }
+    ],
+  });
+
+  return c.json({
+    reply: response.choices[0].message.content
+  });
 });
 
 app.onError((err, c) => {
