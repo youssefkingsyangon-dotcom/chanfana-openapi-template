@@ -66,5 +66,27 @@ openapi.route("/tasks", tasksRouter);
 // Register other endpoints
 openapi.post("/dummy/:slug", DummyEndpoint);
 
+app.post("/ai", async (c) => {
+  const body = await c.req.json();
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: "You are a smart typing coach inside a game. Give short helpful advice."
+      },
+      {
+        role: "user",
+        content: body.message
+      }
+    ],
+  });
+
+  return c.json({
+    reply: response.choices[0].message.content
+  });
+});
+
 // Export the Hono app
 export default app;
